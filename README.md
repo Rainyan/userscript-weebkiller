@@ -22,6 +22,6 @@ Before                     |  After
 ## FAQ/Troubleshooting
 
 * _It doesn't work for some live streams/VODs._
-  * The script activates only if the title of the stream has Japanese characters in it. Since YouTube has started auto-translating video titles, this can disrupt the detection. I'd recommend you try the [YT Auto Translate Canceler](https://github.com/pcouy/YoutubeAutotranslateCanceler/) userscript to work around this issue.
-* _Are you unaware of the irony of this script's naming?_
-  * No 😀
+  * The script activates only if the title of the stream has Japanese characters in it. Since YouTube has started auto-translating video titles, this can disrupt the detection. I'd recommend you try the [YT Auto Translate Canceler](https://github.com/pcouy/YoutubeAutotranslateCanceler/) userscript or similar to work around this issue.
+* _Are you aware of the irony in this script's naming?_
+  * Yes 😀
