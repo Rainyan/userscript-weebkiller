@@ -15,4 +15,9 @@ Before                     |  After
 :-------------------------:|:-------------------------:
 ![](https://user-images.githubusercontent.com/6595066/173186270-a636f228-0ed8-4b9d-a981-fd5e1263650b.png)  |  ![](https://user-images.githubusercontent.com/6595066/173186274-562fd475-255e-4cc0-8adc-f141b3aa9b96.png)
 
-...and yes, the irony of the script's name doesn't escape me 😀
+## FAQ/Troubleshooting
+
+* _It doesn't work for some live streams/VODs._
+  * The script activates only if the title of the stream has Japanese characters in it. Since YouTube has started auto-translating video titles, this can disrupt the detection. I'd recommend you try the [YT Auto Translate Canceler](https://github.com/pcouy/YoutubeAutotranslateCanceler/) userscript to work around this issue.
+* _Does the irony of this script's naming escape you?_
+  * No 😀
