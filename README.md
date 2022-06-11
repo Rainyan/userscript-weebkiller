@@ -7,9 +7,11 @@ If a YouTube live stream's title is in Japanese, weed out all the live chat comm
 The code is based on Emubure's "Flow Youtube Chat" userscript, which apparently has since gone offline, but has been forked [to here](https://github.com/gepz/userscript/tree/main/packages/flow-youtube-chat).
 
 ## Installation
-[Direct link to userscript](https://github.com/Rainyan/userscript-weebkiller/raw/main/weebkiller.user.js)
+First you'll need a [userscript manager](https://en.wikipedia.org/wiki/Userscript_manager) for your browser.
 
-Tested on Violentmonkey, but should probably work on other userscript managers as well.
+[Direct link to the userscript](https://github.com/Rainyan/userscript-weebkiller/raw/main/weebkiller.user.js), which should initiate the installation for most managers.
+
+Tested on Violentmonkey, but it should probably work on other userscript managers as well.
 
 ## Example
 
