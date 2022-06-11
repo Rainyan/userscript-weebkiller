@@ -2,7 +2,7 @@
 
 If a YouTube live stream's title is in Japanese, weed out all the live chat comments that aren't.
 
-The code is based on Emubure's "Flow Youtube Chat" userscript, which apparently has since been forked [to here](https://github.com/gepz/userscript/tree/main/packages/flow-youtube-chat).
+The code is based on Emubure's "Flow Youtube Chat" userscript, which apparently has since gone offline, but has been forked [to here](https://github.com/gepz/userscript/tree/main/packages/flow-youtube-chat).
 
 ## Installation
 [Direct link to userscript](https://github.com/Rainyan/userscript-weebkiller/raw/main/weebkiller.user.js)
