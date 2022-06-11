@@ -2,7 +2,7 @@
 // @name            Weeb killer
 // @description     If a YouTube live stream's title is in Japanese, filter out all the comments that aren't. Code logic is based on Emubure's "Flow Youtube Chat" userscript.
 // @namespace       YtWeebKiller
-// @version         0.2.1
+// @version         0.3.0
 // @author          Original "Flow Youtube Chat" userscript code by Emubure, this userscript fork by rain
 // @domain          https://www.youtube.com
 // @match           https://www.youtube.com/watch*
@@ -31,19 +31,19 @@ function IsJapanese(text) {
 }
 
 $(window).on('load', function() {
-    // FIXME: this is kind of awful, should refactor into some async form. But hey, it works.
-    function pausecomp(millis) {
-        var date = new Date();
-        var curDate = null;
-        do { curDate = new Date(); }
-        while(curDate-date < millis);
-    }
-    // YouTube loves to auto-translate video titles, which will in turn break our
-    // title language detection, so wait a few seconds for other userscripts to
-    // undo the damage before continuing, such as: https://github.com/pcouy/YoutubeAutotranslateCanceler/
-    // Ideally we should just grab the original title via YT API request instead of relying on the HTML,
-    // so we didn't need to do any of this.
-    pausecomp(5000);
+    // FIXME: this is kind of awful, should refactor into some async form.
+    // function pausecomp(millis) {
+    //     var date = new Date();
+    //     var curDate = null;
+    //     do { curDate = new Date(); }
+    //     while(curDate-date < millis);
+    // }
+    // // YouTube loves to auto-translate video titles, which will in turn break our
+    // // title language detection, so wait a few seconds for other userscripts to
+    // // undo the damage before continuing, such as: https://github.com/pcouy/YoutubeAutotranslateCanceler/
+    // // Ideally we should just grab the original title via YT API request instead of relying on the HTML,
+    // // so we didn't need to do any of this.
+    // pausecomp(5000);
   
     var htmlTitle = document.getElementsByTagName("title")[0].innerHTML;
     if (!IsJapanese(htmlTitle)) {
