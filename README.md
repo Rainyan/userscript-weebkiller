@@ -2,6 +2,8 @@
 
 If a YouTube live stream's title is in Japanese, weed out all the live chat comments that aren't.
 
+日本語メインの配信から英語などで書いたコメントを隠せるユーザースクリプトです。隠す機能は、配信タイトルが日本語の文字を含む時のみ発動します。
+
 The code is based on Emubure's "Flow Youtube Chat" userscript, which apparently has since gone offline, but has been forked [to here](https://github.com/gepz/userscript/tree/main/packages/flow-youtube-chat).
 
 ## Installation
