@@ -7,6 +7,8 @@ The code is based on Emubure's "Flow Youtube Chat" userscript, which apparently 
 ## Installation
 [Direct link to userscript](https://github.com/Rainyan/userscript-weebkiller/raw/main/weebkiller.user.js)
 
+Tested on Violentmonkey, but should probably work on other userscript managers as well.
+
 ## Example
 
 Before                     |  After
