@@ -37,11 +37,11 @@ $(window).on('load', function() {
         do { curDate = new Date(); }
         while(curDate-date < millis);
     }
-	// YouTube loves to auto-translate video titles, which will in turn break our
+    // YouTube loves to auto-translate video titles, which will in turn break our
     // title language detection, so wait a few seconds for other userscripts to
     // undo the damage before continuing.
-	// Ideally we should just grab the original title via YT API request instead of relying on the HTML,
-	// so we didn't need to do any of this.
+    // Ideally we should just grab the original title via YT API request instead of relying on the HTML,
+    // so we didn't need to do any of this.
     pausecomp(5000);
   
     var htmlTitle = document.getElementsByTagName("title")[0].innerHTML;
