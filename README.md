@@ -23,7 +23,7 @@ Before                     |  After
 
 ## Troubleshooting
 
-* Script doesn't activate
+* The userscript doesn't do anything
   * The script only activates when there's Japanese characters in the video title.
   * Try forcing the video page to reload with shift+F5 and see if that fixes it.
 * The chat is flickering
