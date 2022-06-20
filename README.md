@@ -23,8 +23,5 @@ Before                     |  After
 
 ## Troubleshooting
 
-* The userscript doesn't do anything
-  * The script only activates when there's Japanese characters in the video title.
-  * Try forcing the video page to reload with shift+F5 and see if that fixes it.
-* The chat is flickering
+* The chat box is flickering
   * Try hiding and then re-displaying the chat window using the YT chat window UI buttons.
