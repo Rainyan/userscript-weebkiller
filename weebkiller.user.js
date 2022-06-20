@@ -42,6 +42,7 @@ function getPageTitle() {
     return match ? match[1] : "";
 }
 
+// Can't use mutation observer for Youtube's in-place page loading voodoo, so just loop like a madman
 function youtubeSucks() {
     if(storedHref !== location.href) {
         if (IsJapanese(getPageTitle())) {
