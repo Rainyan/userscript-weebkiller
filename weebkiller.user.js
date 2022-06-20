@@ -2,9 +2,9 @@
 // @name            Weeb killer
 // @description     If a YouTube live stream's title is in Japanese, filter out all the comments that aren't. Code logic is based on Emubure's "Flow Youtube Chat" userscript.
 // @namespace       YtWeebKiller
-// @version         0.6.0
+// @version         0.7.0
 // @author          Original "Flow Youtube Chat" userscript code by Emubure, this userscript fork by rain
-// @match           https://www.youtube.com/watch
+// @match           https://www.youtube.com/*
 // @require         https://code.jquery.com/jquery-3.6.0.min.js
 // @updateURL       https://cdn.jsdelivr.net/gh/Rainyan/userscript-weebkiller@main/weebkiller.user.js
 // @run-at          document-idle
@@ -14,6 +14,13 @@
 "use strict";
 
 const PRINT_DEBUG_LOG = false;
+
+let storedHref = "";
+// Used for tracking the found state, so that we can only parse the dom when needed.
+let found_chat_field = false;
+let findInterval = null;
+
+findChatField();
 
 function log(text) {
     if (PRINT_DEBUG_LOG) {
@@ -27,126 +34,115 @@ function IsJapanese(text) {
     return regex.test(text);
 }
 
-$(window).on("load", function() {
-    let LIVE_PAGE = {
-        getChatField: () => {
-            const contentDoc = document.getElementById("chatframe").contentDocument;
-            // Can be null if chat window is minimized by user, which would throw an error, so we check.
-            if (contentDoc !== null) {
-                return contentDoc.querySelector("#items.style-scope.yt-live-chat-item-list-renderer");
-            }
-            return null;
-        }
-    };
+function getPageTitle() {
+    // This regex matching idea is borrowed from pcouy's YoutubeAutotranslateCanceler,
+    // Copyright (c) 2020 Pierre Couy, used under the MIT License:
+    // https://github.com/pcouy/YoutubeAutotranslateCanceler/blob/master/LICENSE
+    const match = document.title.match(/^(?:\([0-9]+\) )?(.*?)(?: - YouTube)$/); // ("(n) ") + "TITLE - YouTube"
+    return match ? match[1] : "";
+}
 
-    let storedHref = location.href;
-    const URLObserver = new MutationObserver(function(mutations){
-        mutations.forEach(function(mutation){
-            if(storedHref !== location.href){
-                findChatField();
-                storedHref = location.href;
-                log("URL Changed", storedHref, location.href);
-            }
-        });
-    });
-
-    $(document).ready(() => {
-        // This regex matching idea is borrowed from pcouy's YoutubeAutotranslateCanceler,
-        // Copyright (c) 2020 Pierre Couy, used under the MIT License:
-        // https://github.com/pcouy/YoutubeAutotranslateCanceler/blob/master/LICENSE
-        const titleMatch = document.title.match(/^(?:\([0-9]+\) )?(.*?)(?: - YouTube)$/); // ("(n) ") + "TITLE - YouTube"
-        if (!IsJapanese(titleMatch[1])) {
-            log("Not Japanese title; won't filter live chat: " + titleMatch[1]);
-        } else {
-            log("Is Japanese title; will filter live chat: " + titleMatch[1]);
-            //チャット欄とプレイヤーが出るまで待つ
+function youtubeSucks() {
+    if(storedHref !== location.href) {
+        if (IsJapanese(getPageTitle())) {
+            log("URL Changed", storedHref, location.href);
             findChatField();
-        }
-    });
-
-    // Used for tracking the found state, so that we can only parse the dom when needed.
-    let found_chat_field = false;
-    let findInterval;
-    function findChatField() {
-        let FindCount = 1;
-        clearInterval(findInterval);
-        findInterval = setInterval(function() {
-            if (found_chat_field && LIVE_PAGE.getChatField() === null) {
-                found_chat_field = false;
-            }
-            if (found_chat_field) {
-                return;
-            }
-
-            ++FindCount;
-            if (FindCount > 180) {
-                log("The chat element cannot be found");
-                clearInterval(findInterval);
-                FindCount = 0;
-            }
-            if (document.getElementById("chatframe")) {
-               if (LIVE_PAGE.getChatField() !== null) {
-                   log("Found the chat element: ");
-                   log(LIVE_PAGE.getChatField());
-                   found_chat_field = true;
-
-                   initialize();
-
-                   // Don't clearInterval, because we wanna keep on tracking
-                   // for any new chat fields in case user closed/minimized the chat.
-                   //clearInterval(findInterval);
-
-                   FindCount = 0;
-               }
-            }
-        }, 2000); // If we do this too fast, the chat may start flickering for whatever reason. So give it a few sec interval.
-    }
-
-    function initialize() {
-        log("initialize...");
-
-        URLObserver.disconnect();
-        URLObserver.observe(document, {childList: true, subtree: true});
-
-        if (LIVE_PAGE.getChatField() !== null) {
-            ChatFieldObserver.disconnect();
-            ChatFieldObserver.observe(LIVE_PAGE.getChatField(), {childList: true});
+            storedHref = location.href;
         }
     }
+}
+setInterval(youtubeSucks, 1000);
 
-    const ChatFieldObserver = new MutationObserver(function(mutations) {
-        mutations.forEach(function(e) {
-            let addedChats = e.addedNodes;
-            for (let i = 0; i < addedChats.length; ++i) {
-                const commentText = convertChat(addedChats[i]);
-                if ((commentText.length > 0) &&
-                   (!commentText.includes(" was gifted a membership by ")) &&
-                   (!IsJapanese(commentText)))
-                {
-                    addedChats[i].style.display="none";
-                    log("Chat message was filtered: \"" + commentText + "\"");
-                }
+let LIVE_PAGE = {
+    getChatField: () => {
+        const chatFrame = document.getElementById("chatframe");
+        const contentDoc = chatFrame ? chatFrame.contentDocument : null;
+        // Can be null if chat window is minimized by user, which would throw an error, so we check.
+        if (contentDoc !== null) {
+            return contentDoc.querySelector("#items.style-scope.yt-live-chat-item-list-renderer");
+        }
+        return null;
+    }
+};
+
+function findChatField() {
+    let FindCount = 1;
+    clearInterval(findInterval);
+    findInterval = setInterval(function() {
+        if (found_chat_field && LIVE_PAGE.getChatField() === null) {
+            found_chat_field = false;
+        }
+        if (found_chat_field) {
+            return;
+        }
+
+        ++FindCount;
+        if (FindCount > 180) {
+            log("The chat element cannot be found");
+            clearInterval(findInterval);
+            FindCount = 0;
+        }
+        if (document.getElementById("chatframe")) {
+           if (LIVE_PAGE.getChatField() !== null) {
+               log("Found the chat element: ");
+               log(LIVE_PAGE.getChatField());
+               found_chat_field = true;
+
+               initialize();
+
+               // Don't clearInterval, because we wanna keep on tracking
+               // for any new chat fields in case user closed/minimized the chat.
+               //clearInterval(findInterval);
+
+               FindCount = 0;
+           }
+        }
+    }, 250);
+}
+
+function initialize() {
+    log("initialize...");
+
+    if (LIVE_PAGE.getChatField() !== null) {
+        ChatFieldObserver.disconnect();
+        ChatFieldObserver.observe(LIVE_PAGE.getChatField(), {childList: true});
+    }
+}
+
+const ChatFieldObserver = new MutationObserver(function(mutations) {
+    mutations.forEach(function(e) {
+        let addedChats = e.addedNodes;
+        for (let i = 0; i < addedChats.length; ++i) {
+            const commentText = convertChat(addedChats[i]);
+            if ((commentText.length > 0) &&
+               (!commentText.includes(" was gifted a membership by ")) &&
+               (!IsJapanese(commentText)))
+            {
+                addedChats[i].style.display="none";
+                log("Chat message was filtered: \"" + commentText + "\"");
             }
-        });
+        }
     });
+});
 
-    function convertChat(chat) {
-        let text = "";
-        //チャットの子要素を見ていく
-        let children = Array.from(chat.children);
-        children.some(_chat => {
-            let childID = _chat.id;
-            if (childID === "content") {
-                text = Array.from(_chat.children).find((v) => v.id === "message").innerText;
-            }
-            //スパチャの場合
-            else if(childID === "card") {
-                //通常
-                if (_chat.className === "style-scope yt-live-chat-paid-message-renderer") {
+function convertChat(chat) {
+    let text = "";
+    //チャットの子要素を見ていく
+    let children = Array.from(chat.children);
+    children.some(_chat => {
+        let childID = _chat.id;
+        if (childID === "content") {
+            text = Array.from(_chat.children).find((v) => v.id === "message").innerText;
+        }
+        //スパチャの場合
+        else if(childID === "card") {
+            //通常
+            if (_chat.className === "style-scope yt-live-chat-paid-message-renderer") {
+                if (content && content.children) {
                     text = content.children[0].innerText;
                 }
             }
-        });
-        return text;
-    }
-});
+        }
+    });
+    return text;
+}
