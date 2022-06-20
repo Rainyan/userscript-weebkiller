@@ -20,3 +20,11 @@ Before                     |  After
 ![](https://user-images.githubusercontent.com/6595066/173186270-a636f228-0ed8-4b9d-a981-fd5e1263650b.png)  |  ![](https://user-images.githubusercontent.com/6595066/173186274-562fd475-255e-4cc0-8adc-f141b3aa9b96.png)
 
 ...and yes, I am aware of the irony in this script's naming 😀
+
+## Troubleshooting
+
+* Script doesn't activate
+  * The script only activates when there's Japanese characters in the video title.
+  * Try forcing the video page to reload with shift+F5 and see if that fixes it.
+* The chat is flickering
+  * Try hiding and then re-displaying the chat window using the YT chat window UI buttons.
