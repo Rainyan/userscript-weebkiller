@@ -11,7 +11,7 @@ First you'll need a [userscript manager](https://en.wikipedia.org/wiki/Userscrip
 
 [Direct link to the userscript](https://github.com/Rainyan/userscript-weebkiller/raw/main/weebkiller.user.js), which should initiate the installation for most managers. If not, copy-paste the code contents to your userscript manager as appropriate.
 
-Tested on Violentmonkey, but it should probably work on other userscript managers as well.
+Tested with Violentmonkey/Firefox, but it should probably work with other userscript managers/browsers as well.
 
 ## Example
 
