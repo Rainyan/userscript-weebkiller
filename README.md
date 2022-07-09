@@ -25,3 +25,5 @@ Before                     |  After
 
 * The chat box is flickering
   * Try hiding and then re-displaying the chat window using the YT chat window UI buttons.
+* The script is not filtering messages
+  * Try reloading the video page without cache (usually `CTRL+F5` or `SHIFT+F5`, depending on browser).
