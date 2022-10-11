@@ -2,7 +2,7 @@
 // @name            Weeb killer
 // @description     If a YouTube live stream's title is in Japanese, filter out all the comments that aren't. Code logic is based on Emubure's "Flow Youtube Chat" userscript.
 // @namespace       YtWeebKiller
-// @version         0.8.1
+// @version         0.8.2
 // @author          Original "Flow Youtube Chat" userscript code by Emubure, this userscript fork by rain
 // @match           https://www.youtube.com/*
 // @updateURL       https://cdn.jsdelivr.net/gh/Rainyan/userscript-weebkiller@main/weebkiller.user.js
