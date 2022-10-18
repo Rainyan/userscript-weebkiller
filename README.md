@@ -9,7 +9,7 @@ The code is based on Emubure's "Flow Youtube Chat" userscript, which apparently 
 ## Installation
 First you'll need a [userscript manager](https://en.wikipedia.org/wiki/Userscript_manager) for your browser. If you don't have a preference, I'd suggest [Violentmonkey](https://violentmonkey.github.io/).
 
-[Direct link to the userscript](https://github.com/Rainyan/userscript-weebkiller/raw/main/weebkiller.user.js), which should initiate the installation for most managers. If not, copy-paste the code contents to your userscript manager as appropriate.
+Click here for a [direct download link to the userscript](https://github.com/Rainyan/userscript-weebkiller/raw/main/weebkiller.user.js), which should initiate the installation for most managers. If not, copy-paste the code contents to your userscript manager as appropriate.
 
 Tested with Violentmonkey/Firefox, but it should probably work with other userscript managers/browsers as well.
 
