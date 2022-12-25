@@ -1,3 +1,5 @@
+![Download stats](https://data.jsdelivr.com/v1/package/gh/Rainyan/userscript-weebkiller/badge)
+
 # userscript-weebkiller
 
 If a YouTube live stream's title is in Japanese, weed out all the live chat comments that aren't.
