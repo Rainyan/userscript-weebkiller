@@ -1,4 +1,5 @@
-![Download stats](https://data.jsdelivr.com/v1/package/gh/Rainyan/userscript-weebkiller/badge)
+![Download stats](https://data.jsdelivr.com/v1/package/gh/Rainyan/userscript-weebkiller/badge?style=rounded)
+[![CodeQL](https://github.com/Rainyan/userscript-weebkiller/actions/workflows/codeql.yml/badge.svg)](https://github.com/Rainyan/userscript-weebkiller/actions/workflows/codeql.yml)
 
 # userscript-weebkiller
 
