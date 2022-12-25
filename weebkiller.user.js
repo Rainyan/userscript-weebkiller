@@ -2,7 +2,7 @@
 // @name            Weeb killer
 // @description     If a YouTube live stream's title is in Japanese, filter out all the comments that aren't. Code logic is based on Emubure's "Flow Youtube Chat" userscript.
 // @namespace       YtWeebKiller
-// @version         0.8.2
+// @version         0.9.0
 // @author          Original "Flow Youtube Chat" userscript code by Emubure, this userscript fork by rain
 // @match           https://www.youtube.com/*
 // @updateURL       https://cdn.jsdelivr.net/gh/Rainyan/userscript-weebkiller@main/weebkiller.user.js
@@ -38,7 +38,7 @@ function getPageTitle() {
     // Copyright (c) 2020 Pierre Couy, used under the MIT License:
     // https://github.com/pcouy/YoutubeAutotranslateCanceler/blob/master/LICENSE
     const match = document.title.match(/^(?:\([0-9]+\) )?(.*?)(?: - YouTube)$/); // ("(n) ") + "TITLE - YouTube"
-    return match ? match[1] : "";
+    return match ? match[1] : document.title.split(" - YouTube")[0];
 }
 
 // Can't use mutation observer for Youtube's in-place page loading voodoo, so just loop like a madman
