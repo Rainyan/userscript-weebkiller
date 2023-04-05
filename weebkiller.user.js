@@ -2,7 +2,7 @@
 // @name            Weeb killer
 // @description     If a YouTube live stream's title is in Japanese, filter out all the comments that aren't. Code logic is based on Emubure's "Flow Youtube Chat" userscript.
 // @namespace       YtWeebKiller
-// @version         0.9.0
+// @version         0.10.0
 // @author          Original "Flow Youtube Chat" userscript code by Emubure, this userscript fork by rain
 // @match           https://www.youtube.com/*
 // @updateURL       https://cdn.jsdelivr.net/gh/Rainyan/userscript-weebkiller@main/weebkiller.user.js
@@ -12,17 +12,18 @@
 
 "use strict";
 
-const PRINT_DEBUG_LOG = false;
+const WK_PRINT_DEBUG_LOG = false;
 
-let storedHref = "";
+var WK_IS_ACTIVE = false;
+let WK_STORED_HREF = "";
 // Used for tracking the found state, so that we can only parse the dom when needed.
-let found_chat_field = false;
-let findInterval = null;
+let WK_FOUND_CHAT_FIELD = false;
+let WK_FIND_INTERVAL = null;
 
 findChatField();
 
 function log(text) {
-    if (PRINT_DEBUG_LOG) {
+    if (WK_PRINT_DEBUG_LOG) {
         console.log(text);
     }
 }
@@ -43,11 +44,12 @@ function getPageTitle() {
 
 // Can't use mutation observer for Youtube's in-place page loading voodoo, so just loop like a madman
 function youtubeSucks() {
-    if(storedHref !== location.href) {
-        if (IsJapanese(getPageTitle())) {
-            log("URL Changed", storedHref, location.href);
+    if(WK_STORED_HREF !== location.href) {
+        log("URL Changed", WK_STORED_HREF, location.href);
+        WK_IS_ACTIVE = IsJapanese(getPageTitle());
+        if (WK_IS_ACTIVE) {
             findChatField();
-            storedHref = location.href;
+            WK_STORED_HREF = location.href;
         }
         // Not a Japanese video title - don't filter comments
         else {
@@ -62,71 +64,109 @@ let LIVE_PAGE = {
         const chatFrame = document.getElementById("chatframe");
         const contentDoc = chatFrame ? chatFrame.contentDocument : null;
         // Can be null if chat window is minimized by user, which would throw an error, so we check.
-        if (contentDoc !== null) {
-            return contentDoc.querySelector("#items.style-scope.yt-live-chat-item-list-renderer");
+        if (contentDoc === null) {
+            return null;
+        }
+        return contentDoc.querySelector("#items.style-scope.yt-live-chat-item-list-renderer");
+    },
+    getIconButton: () => {
+        const chatFrame = document.getElementById("chatframe");
+        const contentDoc = chatFrame ? chatFrame.contentDocument : null;
+        // Can be null if chat window is minimized by user, which would throw an error, so we check.
+        if (contentDoc === null) {
+            return null;
+        }
+
+        return contentDoc.getElementById("action-buttons");
+
+        let elems = contentDoc.getElementsByTagName("yt-live-chat-header-renderer");
+        if (elems.length === 1) {
+            let btn = elems[0].getElementsByTagName("yt-live-chat-button");
+            if (btn.length === 1) {
+                return btn[0];//.querySelector("#items.style-scope.yt-button-renderer");
+            }
         }
         return null;
-    }
+    },
 };
 
 function findChatField() {
     let FindCount = 1;
-    clearInterval(findInterval);
-    findInterval = setInterval(function() {
-        if (found_chat_field && LIVE_PAGE.getChatField() === null) {
-            found_chat_field = false;
+    clearInterval(WK_FIND_INTERVAL);
+    WK_FIND_INTERVAL = setInterval(function() {
+        if (WK_FOUND_CHAT_FIELD && LIVE_PAGE.getChatField() === null) {
+            WK_FOUND_CHAT_FIELD = false;
         }
-        if (found_chat_field) {
+        if (WK_FOUND_CHAT_FIELD) {
             return;
         }
 
         ++FindCount;
         if (FindCount > 180) {
             log("The chat element cannot be found");
-            clearInterval(findInterval);
+            clearInterval(WK_FIND_INTERVAL);
             FindCount = 0;
         }
-        if (document.getElementById("chatframe")) {
-           if (LIVE_PAGE.getChatField() !== null) {
-               log("Found the chat element: ");
-               log(LIVE_PAGE.getChatField());
-               found_chat_field = true;
 
-               initialize();
-
-               // Don't clearInterval, because we wanna keep on tracking
-               // for any new chat fields in case user closed/minimized the chat.
-               //clearInterval(findInterval);
-
-               FindCount = 0;
-           }
+        if (LIVE_PAGE.getChatField() === null) {
+            return;
         }
+        WK_FOUND_CHAT_FIELD = true;
+        initialize();
+        // Don't clearInterval, because we wanna keep on tracking
+        // for any new chat fields in case user closed/minimized the chat.
+
+        FindCount = 0;
     }, 250);
 }
 
 function initialize() {
     log("initialize...");
 
-    if (LIVE_PAGE.getChatField() !== null) {
+    let chatField = LIVE_PAGE.getChatField();
+    if (chatField !== null) {
         ChatFieldObserver.disconnect();
-        ChatFieldObserver.observe(LIVE_PAGE.getChatField(), {childList: true});
+        ChatFieldObserver.observe(chatField, {childList: true});
+    }
+
+    let iconButton = LIVE_PAGE.getIconButton();
+    if (iconButton !== null) {
+        var btn = null;
+        for (var i = 0; i < iconButton.children.length; ++i) {
+            if (iconButton.children[i].id === "weebtoggle") {
+                btn = iconButton.children[i];
+                break;
+            }
+        }
+        if (btn === null) {
+            btn = document.createElement("button");
+            btn.innerHTML = '<button id="weebtoggle">';
+            btn.addEventListener("click", () => {
+                WK_IS_ACTIVE = !WK_IS_ACTIVE;
+                btn.textContent = WK_IS_ACTIVE ? "日本語のみ" : "全言語";
+            }, false);
+            iconButton.appendChild(btn);
+            btn.textContent = WK_IS_ACTIVE ? "日本語のみ" : "全言語";
+        }
     }
 }
 
 const ChatFieldObserver = new MutationObserver(function(mutations) {
-    mutations.forEach(function(e) {
-        let addedChats = e.addedNodes;
-        for (let i = 0; i < addedChats.length; ++i) {
-            const commentText = convertChat(addedChats[i]);
-            if ((commentText.length > 0) &&
-               (!commentText.includes(" was gifted a membership by ")) &&
-               (!IsJapanese(commentText)))
-            {
-                addedChats[i].style.display="none";
-                log("Chat message was filtered: \"" + commentText + "\"");
+    if (WK_IS_ACTIVE) {
+        mutations.forEach(function(e) {
+            let addedChats = e.addedNodes;
+            for (let i = 0; i < addedChats.length; ++i) {
+                const commentText = convertChat(addedChats[i]);
+                if ((commentText.length > 0) &&
+                   (!commentText.includes(" was gifted a membership by ")) &&
+                   (!IsJapanese(commentText)))
+                {
+                    addedChats[i].style.display="none";
+                    log("Chat message was filtered: \"" + commentText + "\"");
+                }
             }
-        }
-    });
+        });
+    }
 });
 
 function convertChat(chat) {
