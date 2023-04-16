@@ -139,8 +139,8 @@ function initialize() {
             }
         }
         if (btn === null) {
-			let nihongo = "漢字/仮名";
-			let zengengo = "全言語";
+            let nihongo = "漢字/仮名";
+            let zengengo = "全言語";
             btn = document.createElement("button");
             btn.innerHTML = '<button id="weebtoggle">';
             btn.addEventListener("click", () => {
