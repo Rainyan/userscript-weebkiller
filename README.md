@@ -3,7 +3,7 @@
 
 # userscript-weebkiller
 
-If a YouTube live stream's title is in Japanese, weed out all the live chat comments that aren't.
+If a YouTube live stream's title is in Japanese, filter out all the live chat comments that aren't.
 
 日本語メインのYouTube配信から英語などで書いたコメントを非表示にできる視聴者用のユーザースクリプトです。隠す機能は、配信タイトルが日本語の文字を含む時のみ発動します。
 
