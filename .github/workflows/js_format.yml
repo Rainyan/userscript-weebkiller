@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - feature/prettier
     paths:
       - "**.js"
       - "**/js_format.yml"
