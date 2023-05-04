@@ -2,7 +2,7 @@
 // @name            Weeb killer
 // @description     If a YouTube live stream's title is in Japanese, filter out all the comments that aren't. Code logic is based on Emubure's "Flow Youtube Chat" userscript.
 // @namespace       YtWeebKiller
-// @version         0.11.1
+// @version         0.12.0
 // @author          Original "Flow Youtube Chat" userscript code by Emubure, this userscript fork by rain
 // @match           https://www.youtube.com/*
 // @updateURL       https://cdn.jsdelivr.net/gh/Rainyan/userscript-weebkiller@main/weebkiller.user.js
@@ -160,17 +160,35 @@ function initialize() {
   }
 }
 
+// When filtering is enabled (WK_IS_ACTIVE),
+// returns a boolean of whether this message should be displayed.
+function ShouldDisplayMessage(message) {
+	// Show messages with Japanese characters
+	if (IsJapanese(message)) {
+		return true;
+	}
+	// Show the membership gift messages by YouTube
+	if (message.includes(" was gifted a membership by ")) {
+		return true;
+	}
+	// Show messages which are a URL hyperlink
+	if (message.startsWith("http")) {
+		return true;
+	}
+	// Show alphabet version of 草/笑
+	if (Array.from(message).every(character => character === "w")) {
+		return true;
+	}
+	return false;
+}
+
 const ChatFieldObserver = new MutationObserver(function (mutations) {
   if (WK_IS_ACTIVE) {
     mutations.forEach(function (e) {
       let addedChats = e.addedNodes;
       for (let i = 0; i < addedChats.length; ++i) {
         const commentText = convertChat(addedChats[i]);
-        if (
-          commentText.length > 0 &&
-          !commentText.includes(" was gifted a membership by ") &&
-          !IsJapanese(commentText)
-        ) {
+        if (!ShouldDisplayMessage(commentText)) {
           addedChats[i].style.display = "none";
           log('Chat message was filtered: "' + commentText + '"');
         }
